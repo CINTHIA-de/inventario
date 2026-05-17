@@ -1,0 +1,82 @@
+<%- include('encabezado.ejs') %>
+
+        <!--Boton nuevo producto-->
+        <div class="mt-5 mb-2">
+            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"> <img
+                    src="imagenes/nuevo_blanco_25px.png"> Nuevo producto </a>
+            <!-- <input type="button" value="Nuevo producto" class="btn btn-primary"> -->
+        </div>
+        <!-- Tabla de productos -->
+        <div class="card-body">
+            <table border="1" class="table table-hover" >
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Marca</th>
+                        <th scope="col">Precio</th>
+                        <th scope="col">Stock</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%  let i = 1
+                    for (let fila of resultado) { %>
+                        <tr>
+                        <th scope="row"><%= i++ %></th>
+                        <td><%=fila.nombre%></td>
+                        <td><%=fila.marca%></td>
+                        <td><%=fila.precio%></td>
+                        <td><%=fila.stock%></td>
+                        <td>
+                            <div class="d-flex">
+                                <a href="/editar?id=<%= fila.id %>" class="btn btn-success"> <img src="imagenes/actualizar.png"></a>
+                                <a href="/eliminar?id=<%= fila.id %>" onclick="return confirm('Estas seguro de eliminar')" class="btn btn-danger" ><img src="imagenes/eliminar.png" ></a>
+                            </div>
+                        </tr>
+                    <%}%>
+                </tbody>
+            </table>
+        </div>
+        <!-- fin tabla de productos -->
+
+
+        <!-- Ventana de nuevo producto -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Agregar nuevo producto</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="/nuevo" method="post">
+                    <div class="modal-body">
+                        <label>Nombre del producto</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Nombre del producto" required minlength="4" maxlength="30">
+
+                        <label>Marca</label>
+                        <select class="form-select" name="marca">
+                           <% for (let fila of marcas){ %>
+                            <option value="<%= fila.id %>"> <%= fila.marca %> </option>
+                            <% } %>  
+                        </select>
+
+                        <label>Precio</label>
+                        <input type="number" name="precio" class="form-control" required min="0" max="1000">
+
+                        <label>Stock</label>
+                        <input type="number" name="stock" class="form-control" required min="0" max="5000">
+    
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Agregar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Fin de ventana de nuevo producto-->
+    </div>
+<%- include('pie_pagina.ejs') %>
