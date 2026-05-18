@@ -1,21 +1,26 @@
 const express = require('express')
 const sqlite = require('sqlite3')
+const path = require('path') // <-- Agregamos esto para solucionar las rutas en internet
 
 const app = express()
 
 //****** Configuraciones ***********/
 app.set('view engine', 'ejs')
+app.set('views', path.join(__dirname, 'views')) // <-- Le asegura a Railway dónde está la carpeta views
 
 //******* Middleware *************/
-app.use(express.static('public'))
+app.use(express.static(path.join(__dirname, 'public'))) // <-- Asegura la carpeta public
 app.use(express.urlencoded({ extended: false }))
 
 //***** Conexión a base de datos ******/
-const base_datos = new sqlite.Database('datos.db', sqlite.OPEN_READWRITE, (error) => {
+// Usamos path.join para que Railway encuentre 'datos.db' sin importar dónde se ejecute
+const dbPath = path.join(__dirname, 'datos.db')
+
+const base_datos = new sqlite.Database(dbPath, sqlite.OPEN_READWRITE, (error) => {
     if (error) {
-        console.log('Error al conectarce a la base de datos')
+        console.log('Error al conectarse a la base de datos:', error.message)
     } else {
-        console.log('Se conecto a la base de datos con exito')
+        console.log('Se conectó a la base de datos con éxito en la ruta: ' + dbPath)
     }
 })
 
@@ -37,6 +42,7 @@ app.get('/', (req, res) => {
         }
     })
 })
+
 app.post('/nuevo', (req, res) => {
     const { nombre, marca, precio, stock } = req.body
     const sql = 'insert into productos (nombre, marca, precio, stock) values(?,?,?,?)'
@@ -73,13 +79,13 @@ app.get('/editar', (req, res) => {
                 if (error) {
                     console.log('Error al editar las marcas')
                 } else {
-
                     res.render('editar.ejs', { fila, marcas })
                 }
             })
         }
     })
 })
+
 app.post('/editar', (req, res) => {
     const { id, nombre, marca, precio, stock } = req.body
     const sql = 'update productos set nombre=?, marca=?, precio=?, stock=? where id=?'
@@ -91,6 +97,7 @@ app.post('/editar', (req, res) => {
         }
     })
 })
+
 app.post('/buscar', (req, res) => {
     const nombre = req.body.nombre + '%'
     let sql = 'select productos.id, nombre, marcas.marca, precio, stock from productos, marcas where productos.marca = marcas.id and nombre like ?'
@@ -169,7 +176,7 @@ app.get('/eliminar_marca', (req, res) => {
     })
 })
 
-// Definimos el puerto dinámico para internet o el 3000 para local
+//***** Ejecución del servidor con puerto dinámico */
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
