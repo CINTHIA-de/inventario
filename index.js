@@ -169,7 +169,9 @@ app.get('/eliminar_marca', (req, res) => {
     })
 })
 
-//***** Ejecución del servidor */
-app.listen(3000, () => {
-    console.log('El servidor se ejecutó con exito')
-})
+// Definimos el puerto dinámico para internet o el 3000 para local
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log('El servidor se ejecutó con éxito en el puerto ' + PORT);
+});
